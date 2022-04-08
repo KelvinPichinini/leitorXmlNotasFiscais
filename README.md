@@ -11,8 +11,13 @@ O que este pequeno app faz é ler todos os arquivos que foram colocados na pasta
 ### INSTRUÇÕES:
 
 -Clone o repositorio.
+
 -Abra o terminal na raiz do app
+
 -instale as dependencias (npm install)
+
 -Exclua todos os arquivos de exemplo que estão na pasta xmlFiles
+
 -Adicione seus arquivos .XML dentro da pasta xmlFiles
+
 -Execute o app com o comando "node vendas.js"
