@@ -3,69 +3,69 @@ const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 
 function formatDate(aaaammdd){
-  let dia = aaaammdd.split("")[6]+ aaaammdd.split("")[7];
-  return parseFloat(dia);
+  let day = aaaammdd.split("")[6]+ aaaammdd.split("")[7];
+  let month = aaaammdd.split("")[4]+ aaaammdd.split("")[5];
+  let year = aaaammdd.split("")[0]+ aaaammdd.split("")[1]+ aaaammdd.split("")[2]+ aaaammdd.split("")[3];
+  return `${day}/${month}/${year}`;
+}
+function printResults(sales){
+  let sum = 0;
+  sales.forEach(element => {
+    sum += parseFloat(element.value);
+    const formatedDate = formatDate(element.date);
+    console.log(`${formatedDate}: R$${element.value.toFixed(2)}`)
 
+  })
+  console.log("Total: R$"+ sum.toFixed(2).toString().replace('.',','));
 }
 
-let dir = "/home/kelvin/Desktop/xml sat gru/07/Emitidos"
+let dir = "./xmlFiles"
 
-let vendasPorDia = {
-  01: 0,
-  02: 0,
-  03: 0,
-  04: 0,
-  05: 0,
-  06 : 0,
-  07 : 0,
-  08 : 0,
-  09 : 0,
-  10 : 0,
-  11 : 0,
-  12 : 0,
-  13 : 0,
-  14 : 0,
-  15 : 0,
-  16 : 0,
-  17 : 0,
-  18 : 0,
-  19 : 0,
-  20 : 0,
-  21 : 0,
-  22 : 0,
-  23 : 0,
-  24 : 0,
-  25 : 0,
-  26 : 0,
-  27 : 0,
-  28 : 0,
-  29 : 0,
-  30 : 0,
-  31 : 0,
-}
+const sales = [];
+const filesWithProblems = [];
 
 fs.readdir(dir, function (err, files) {
   if (err) {
     console.error("Could not list the directory.", err);
     process.exit(1);
   }
+  const numberOfFiles = files.length;
+  const PROGRESSBAR_SIZE = 50;
   for (const arquivos in files){
+    const completion = Math.ceil(arquivos/numberOfFiles*50 + 1);
+    const dots = ".".repeat(completion + 1)
+    const left = PROGRESSBAR_SIZE - completion
+    const empty = " ".repeat(left)
+      /* need to use  `process.stdout.write` becuase console.log print a newline character */
+      /* \r clear the current line and then print the other characters making it looks like it refresh*/
+    process.stdout.write(`\r[${dots}${empty}] ${completion*2}%`)
+
     if(files[arquivos].endsWith("xml")){
-      //console.log(files[arquivos]);
-      let xmlStr = fs.readFileSync(files[arquivos], "utf8");
-      let dom = new JSDOM(xmlStr);
-      let dEmi = formatDate(dom.window.document.getElementsByTagName("dEmi")[0].innerHTML) ;
-      let vCfe = dom.window.document.getElementsByTagName("vCfe")[0].innerHTML;
-      vendasPorDia[dEmi] += parseFloat(vCfe);
+      //console.log(`reading file: ${files[arquivos]}`);
+      const xmlStr = fs.readFileSync(dir+'/'+files[arquivos], "utf8");
+      const dom = new JSDOM(xmlStr);
+      const dateElement = dom.window.document.getElementsByTagName("dEmi")[0]
+      if(dateElement) {
+        const dEmi = dateElement.innerHTML;
+        const vCfe = parseFloat(dom.window.document.getElementsByTagName("vCfe")[0].innerHTML);
+        const index = sales.findIndex(element => element.date === dEmi);
+        if (index !== -1) {
+          sales[index].value += vCfe;
+        }
+        else {
+          const sale = {date: dEmi, value: vCfe};
+          sales.push(sale);
+        }
+      } else {
+        filesWithProblems.push(files[arquivos]);
+      }
       dom.window.close();
     }  
   }
-  let sum = 0;
-  for(const days in vendasPorDia){
-    console.log(days + ": R$"+vendasPorDia[days].toFixed(2).toString().replace('.',','));
-    sum += vendasPorDia[days];
-  }
-  console.log("Total: R$"+ sum.toFixed(2).toString().replace('.',','));    
+  console.log('\nArquivos com problemas:');
+  console.log(filesWithProblems);
+  printResults(sales);
+      
 })
 
 
