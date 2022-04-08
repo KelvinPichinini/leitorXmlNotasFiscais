@@ -21,3 +21,6 @@ O que este pequeno app faz é ler todos os arquivos que foram colocados na pasta
 -Adicione seus arquivos .XML dentro da pasta xmlFiles
 
 -Execute o app com o comando "node vendas.js"
+
+
+![alt text](https://github.com/KelvinPichinini/leitorXmlNotasFiscais/blob/master/Working.gif "exemplo de funcionamento")

@@ -33,13 +33,13 @@ fs.readdir(dir, function (err, files) {
   const PROGRESSBAR_SIZE = 50;
   console.log(`LENDO OS ARQUIVOS : `);
   for (const arquivos in files){
-    const completion = Math.ceil(arquivos/numberOfFiles*PROGRESSBAR_SIZE);
+    const completion = (parseInt(arquivos) + 1)/numberOfFiles*PROGRESSBAR_SIZE;
     const dots = ".".repeat(completion + 1)
     const left = PROGRESSBAR_SIZE - completion 
     const empty = " ".repeat(left)
       /* need to use  `process.stdout.write` becuase console.log print a newline character */
       /* \r clear the current line and then print the other characters making it looks like it refresh*/
-    process.stdout.write(`\r[${dots}${empty}] ${completion*2}% (${arquivos}|${numberOfFiles} arquivos)`)
+    process.stdout.write(`\r[${dots}${empty}] ${(completion.toFixed(2)) *2}% (${parseInt(arquivos) + 1}|${numberOfFiles} arquivos)`)
 
     if(files[arquivos].endsWith("xml")){
       //console.log(`reading file: ${files[arquivos]}`);
